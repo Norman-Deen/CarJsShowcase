@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Volvo 3D Viewer</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- ✅ Import Map لتحديد المسارات المحلية -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./three/build/three.module.js",
+          "three/addons/": "./three/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="ui">
+      <button onclick="toggleDoors()">🚪 Open/Close Doors</button>
+
+      <div class="color-picker">
+        <div class="color" style="background:#2c2c2c;" onclick="changeColor('#2c2c2c')" title="Black Stone"></div>
+        <div class="color" style="background:#ffffff;" onclick="changeColor('#ffffff')" title="Ice White"></div>
+        <div class="color" style="background:#d3d3d3;" onclick="changeColor('#d3d3d3')" title="Bright Silver"></div>
+        <div class="color" style="background:#5e5e5e;" onclick="changeColor('#5e5e5e')" title="Thunder Grey"></div>
+        <div class="color" style="background:#0f3057;" onclick="changeColor('#0f3057')" title="Denim Blue"></div>
+        <div class="color" style="background:#a52a2a;" onclick="changeColor('#a52a2a')" title="Fusion Red"></div>
+        <div class="color" style="background:#123456;" onclick="changeColor('#123456')" title="Pine Grey"></div>
+      </div>
+    </div>
+
+    <!-- ✅ استدعاء ملف JavaScript كـ module -->
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
