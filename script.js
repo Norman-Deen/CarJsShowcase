@@ -210,6 +210,12 @@ applyPaintMaterial([
 
 
     animateScene();
+
+    // ✅ إخفاء اللودر بعد تحميل النموذج
+const loaderDiv = document.getElementById('loader');
+if (loaderDiv) loaderDiv.style.display = 'none';
+
+
   });
 
 

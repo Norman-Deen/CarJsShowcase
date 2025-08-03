@@ -5,6 +5,9 @@
     <title>Volvo 3D Viewer</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
 
 
     <!-- ✅ Import Map لتحديد المسارات المحلية -->
@@ -19,7 +22,16 @@
   </head>
   <body>
   
-    
+<div id="loader">
+  <div class="spinner-border text-secondary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+
+
+
+
     <div class="ui">
     <button id="door-btn" onclick="toggleDoors()">Open/Close</button>
       <button onclick="switchCameraView()">View</button>
