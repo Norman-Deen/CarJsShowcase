@@ -48,6 +48,9 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap; // الأفضل للنعومة
 
 
 
+
+
+
   document.body.appendChild(renderer.domElement);
 
   composer = new EffectComposer(renderer);
@@ -185,8 +188,26 @@ applyPaintMaterial([
       comp: composer,
       ctrl: controls,
       parts,
-      paintTargets: paintedParts
+      paintTargets: paintedParts,
+      cam: camera // 👈 أرسل الكاميرا
     });
+
+
+
+    // 🔊 صوت حركة الكاميرا
+    const listener = new THREE.AudioListener();
+    camera.add(listener);
+
+    const cameraSound = new THREE.Audio(listener);
+    const audioLoader = new THREE.AudioLoader();
+
+    audioLoader.load('sounds/whoosh-clothes-cape-243486.mp3', function (buffer) {
+      cameraSound.setBuffer(buffer);
+      cameraSound.setLoop(false);
+      cameraSound.setVolume(0.7);
+      window.cameraSound = cameraSound;
+    });
+
 
     animateScene();
   });
@@ -205,6 +226,9 @@ ground.position.y = 0;
 ground.receiveShadow = true;
 scene.add(ground);
 
+
+//new
+window.camera = camera;
 
 
 

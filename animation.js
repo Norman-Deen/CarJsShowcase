@@ -8,12 +8,18 @@ let FrontleftDoor, FrontrightDoor, backLeftDoor, backRightDoor;
 let spoiler, wheelFL, wheelFR, upperWindow, handle;
 let paintedParts = [];
 
+
+let camera;
+
+
+
 // 🔧 ربط العناصر من script.js
 export function initAnimationParts({
-  comp, ctrl, parts, paintTargets
+  comp, ctrl, parts, paintTargets,cam
 }) {
   composer = comp;
   controls = ctrl;
+   camera = cam; // ✅ استلام الكاميرا هنا
 
   ({
     FrontleftDoor,
@@ -36,8 +42,11 @@ export function animateScene() {
   controls.update();
   composer.render();
 
+
   
 }
+
+
 
 // 🚪 فتح/إغلاق الأبواب
 window.toggleDoors = function () {
@@ -64,6 +73,46 @@ window.toggleDoors = function () {
     doorOpen ? 0 : degToRad(-100)
   );
 
+
+
+
+// 🎥 camera toggle animation
+const camStart = doorOpen
+  ? new THREE.Vector3(-44.81, 17.28, -143.38) // ← الوضع الحالي
+  : new THREE.Vector3(-33.41, 13.46, -107.95); // ← الوضع الأصلي
+
+const camTarget = doorOpen
+  ? new THREE.Vector3(-33.41, 13.46, -107.95)
+  : new THREE.Vector3(-44.81, 17.28, -143.38);
+
+const camDuration = 0.5; // ثانية
+const camMoveStart = clock.getElapsedTime();
+
+function animateCamera() {
+  const t = Math.min((clock.getElapsedTime() - camMoveStart) / camDuration, 1);
+  camera.position.lerpVectors(camStart, camTarget, t);
+  camera.updateProjectionMatrix();
+
+  if (t < 1) requestAnimationFrame(animateCamera);
+}
+
+
+
+if (window.cameraSound) {
+  window.cameraSound.stop();  // ⛔ أوقفه إذا كان مشغول
+  window.cameraSound.play();  // ▶️ شغّله من البداية
+}
+
+
+
+
+animateCamera();
+
+
+
+
+
+//doors
   function animateAll() {
     const t = Math.min((clock.getElapsedTime() - start) / duration, 1);
     FrontleftDoor.rotation.y = THREE.MathUtils.lerp(fromFL, doorTarget, t);
