@@ -85,23 +85,21 @@ export function setupEnvironment(renderer, scene) {
 
 const textureLoader = new THREE.TextureLoader();
 
-// الخامة الرئيسية
-const floorTexture = textureLoader.load('img/Concrete022_1K-JPG_Color.jpg');
+const floorTexture = textureLoader.load('img/ug4kedun_8K_Albedo.jpg');
+const floorNormal = textureLoader.load('img/ug4kedun_8K_Normal.jpg');
 
-// خريطة الارتفاع (bump)
-const floorBump = textureLoader.load('img/Concrete022_1K-JPG_Displacement.jpg');
-
-// التكرار
-[floorTexture, floorBump].forEach(tex => {
+[floorTexture, floorNormal].forEach(tex => {
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(50, 50);
 });
 
-// إنشاء الخامة
+// ✨ تحكم بالسطوع هنا (1 = طبيعي، 0.7 = أغمق، 1.2 = أفتح)
+const brightness = 0.9;
+
 export const floorMaterial = new THREE.MeshStandardMaterial({
   map: floorTexture,
-  bumpMap: floorBump,
-  bumpScale: 2, // 👈 تحكم بوضوح النتوء (0.05–0.2)
+  normalMap: floorNormal,
+  color: new THREE.Color(brightness, brightness, brightness),
   roughness: 1,
   metalness: 0
 });
