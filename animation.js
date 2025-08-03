@@ -44,6 +44,10 @@ export function animateScene() {
   controls.update();
   composer.render();
 
+// 📏 منع الكاميرا من النزول تحت الأرض
+if (camera.position.y < 1) {
+  camera.position.y = 1;
+}
 
   
 }
