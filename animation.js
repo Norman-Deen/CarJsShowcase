@@ -10,6 +10,8 @@ let paintedParts = [];
 
 
 let camera;
+let rearView = window.rearView; // 👈 ربط بالحالة العالمية
+
 
 
 
@@ -73,6 +75,12 @@ window.toggleDoors = function () {
     doorOpen ? 0 : degToRad(-100)
   );
 
+
+
+if (window.rearView) {
+  console.warn("Cannot open doors in rear view mode.");
+  return; // ⛔️ إلغاء الوظيفة
+}
 
 
 
@@ -142,4 +150,52 @@ window.changeColor = function (hex) {
       part.material.color.set(hex);
     }
   });
+};
+
+
+
+
+//camera pos2
+window.switchCameraView = function () {
+const doorBtn = document.getElementById('door-btn');
+
+  doorBtn.disabled = true; // ⛔️ تعطيل الزر
+
+  const camFrom = camera.position.clone();
+  const camTo = rearView
+    ? new THREE.Vector3(-33.41, 13.46, -107.95) // ← الرجوع للمكان الأساسي
+    : new THREE.Vector3(41.89, 12.63, 90.92);   // ← الكاميرا الخلفية
+
+  const startTime = clock.getElapsedTime();
+  const duration = 0.5;
+
+  // 🔊 صوت
+  if (window.cameraSound) {
+  window.cameraSound.stop(); // 🛑 إيقافه إذا كان شغّال
+  window.cameraSound.play(); // ▶️ إعادة التشغيل
+}
+
+
+
+//xxxxxx
+function animateSwitch() {
+  const t = Math.min((clock.getElapsedTime() - startTime) / duration, 1);
+  camera.position.lerpVectors(camFrom, camTo, t);
+  controls.update();
+
+  if (t < 1) {
+    requestAnimationFrame(animateSwitch);
+  } else {
+    rearView = !rearView;
+    window.rearView = rearView;
+
+    // ✅ فعّل الزر فقط إذا رجعنا للمشهد الأمامي
+    doorBtn.disabled = rearView; // true إذا بالخلف، false إذا رجع للأمام
+  }
+}
+
+
+
+
+  animateSwitch();
 };

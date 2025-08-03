@@ -229,6 +229,7 @@ scene.add(ground);
 
 //new
 window.camera = camera;
+window.rearView = false;
 
 
 
