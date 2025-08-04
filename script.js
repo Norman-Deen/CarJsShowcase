@@ -31,7 +31,7 @@ init();
 function init() {
   scene = new THREE.Scene();
 
-  camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 0.01, 200);
+  camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 5, 200);
   camera.position.set(-36.19, 14.13, -112.57);
   camera.rotation.set(-3.05, -0.31, -3.11);
 
@@ -63,6 +63,9 @@ setupEnvironment(renderer, scene);
 
   controls = new OrbitControls(camera, renderer.domElement);
   controls.target.set(0, 2, 0);
+  controls.minDistance = 40;   // أقرب مسافة من الجسم
+controls.maxDistance = 150;  // أبعد مسافة بالكاميرا
+
   controls.update();
 
 
