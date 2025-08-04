@@ -6,6 +6,12 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 
+import { Lensflare, LensflareElement } from 'three/addons/objects/Lensflare.js';
+
+
+const textureLoader = new THREE.TextureLoader();
+const textureFlare0 = textureLoader.load('img/lensflare0.png');
+const textureFlare3 = textureLoader.load('img/lensflare3.png');
 
 
 import {
@@ -71,24 +77,43 @@ controls.maxDistance = 150;  // أبعد مسافة بالكاميرا
 
 
 
-  // 🔦 ضوء سبوت يواجه الكاميرا
-const spotlight = new THREE.SpotLight(0xffffff, 1000);
-spotlight.position.set(-7, 6.7, -20); // مكان أمامي منخفض قليلاً
-spotlight.angle = Math.PI / 20;
-spotlight.penumbra = 0.4;
-spotlight.decay = 1.5;
-spotlight.distance = 100;
-spotlight.castShadow = true;
-spotlight.target = camera; // 👈 يضرب باتجاه الكاميرا
+// 🔦 دالة إنشاء سبوت لايت مع عدسة
+function createHeadlightWithFlare(position, target = camera) {
+  const spotlight = new THREE.SpotLight(0xffffff, 9000);
+  spotlight.position.copy(position);
+  spotlight.angle = Math.PI / 20;
+  spotlight.penumbra = 0.4;
+  spotlight.decay = 1.5;
+  spotlight.distance = 100;
+  spotlight.castShadow = true;
+  spotlight.target = target;
 
+  const lensflare = new Lensflare();
+  lensflare.addElement(new LensflareElement(textureFlare0, 300, 0, spotlight.color));
+  lensflare.addElement(new LensflareElement(textureFlare3, 60, 0.6));
+  lensflare.addElement(new LensflareElement(textureFlare3, 70, 0.7));
+  lensflare.addElement(new LensflareElement(textureFlare3, 120, 0.9));
+  lensflare.addElement(new LensflareElement(textureFlare3, 70, 1));
+  spotlight.add(lensflare);
 
+  scene.add(spotlight);
+  scene.add(spotlight.target);
 
-scene.add(spotlight);
-scene.add(spotlight.target);
-// 🧭 مساعد لرؤية الضوء
-const spotHelper = new THREE.SpotLightHelper(spotlight);
-scene.add(spotHelper);
+  const helper = new THREE.SpotLightHelper(spotlight);
+  scene.add(helper);
+
+  return spotlight;
+}
+
+// 🟢 المصباح الأول (يسار)
+const spotlightLeft = createHeadlightWithFlare(new THREE.Vector3(-7, 7, -20));
+
+// 🔵 المصباح الثاني (يمين)
+const spotlightRight = createHeadlightWithFlare(new THREE.Vector3(7, 7, -20));
+
+// 🔧 أدوات التحكّم (ابقها بعد الكاميرا)
 const transformControl = new TransformControls(camera, renderer.domElement);
+
 
 
 
