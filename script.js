@@ -102,8 +102,8 @@ function createHeadlightWithFlare(position, target = camera) {
   scene.add(spotlight);
   scene.add(spotlight.target);
 
-  const helper = new THREE.SpotLightHelper(spotlight);
-  scene.add(helper);
+  //const helper = new THREE.SpotLightHelper(spotlight);
+  //scene.add(helper);
 
   return spotlight;
 }
@@ -148,8 +148,8 @@ scene.add(sunLight);
 
 
 // 🧭 مساعد لرؤية الضوء
-const sunHelper = new THREE.DirectionalLightHelper(sunLight, 5);
-scene.add(sunHelper);
+//const sunHelper = new THREE.DirectionalLightHelper(sunLight, 5);
+//scene.add(sunHelper);
 
 
 
@@ -226,19 +226,30 @@ applyPaintMaterial([
 
 
 
-    // 🔊 صوت حركة الكاميرا
-    const listener = new THREE.AudioListener();
-    camera.add(listener);
+// 🔊 إعداد مستمع الصوت
+const listener = new THREE.AudioListener();
+camera.add(listener);
 
-    const cameraSound = new THREE.Audio(listener);
-    const audioLoader = new THREE.AudioLoader();
+// 🔊 صوت الكاميرا (انتقال المنظر)
+const cameraSound = new THREE.Audio(listener);
+const audioLoader = new THREE.AudioLoader();
 
-    audioLoader.load('sounds/whoosh-clothes-cape-243486.mp3', function (buffer) {
-      cameraSound.setBuffer(buffer);
-      cameraSound.setLoop(false);
-      cameraSound.setVolume(0.7);
-      window.cameraSound = cameraSound;
-    });
+audioLoader.load('sounds/whoosh-clothes-cape-243486.mp3', function (buffer) {
+  cameraSound.setBuffer(buffer);
+  cameraSound.setLoop(false);
+  cameraSound.setVolume(0.7);
+  window.cameraSound = cameraSound;
+});
+
+// 🔊 صوت تشغيل المحرك
+const engineSound = new THREE.Audio(listener);
+
+audioLoader.load('sounds/car-engine-372477.mp3', function (buffer) {
+  engineSound.setBuffer(buffer);
+  engineSound.setLoop(false);
+  engineSound.setVolume(1.0); // 🔥 أقوى صوت
+  window.engineSound = engineSound;
+});
 
 
     animateScene();

@@ -157,7 +157,14 @@ if (window.spotlightRight) window.spotlightRight.visible = doorOpen;
     }
   }
 
-  
+if (!doorOpen && window.engineSound) {
+  window.engineSound.stop();
+  setTimeout(() => {
+    window.engineSound.play();
+  }, 350); // ⏱ تأخير نصف ثانية
+}
+
+
   animateAll();
 };
 
