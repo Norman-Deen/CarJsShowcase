@@ -148,9 +148,16 @@ animateCamera();
       requestAnimationFrame(animateAll);
     } else {
       doorOpen = !doorOpen;
+
+// ✅ تشغيل أو إطفاء الضوء حسب حالة الأبواب
+if (window.spotlightLeft) window.spotlightLeft.visible = doorOpen;
+if (window.spotlightRight) window.spotlightRight.visible = doorOpen;
+
+
     }
   }
 
+  
   animateAll();
 };
 

@@ -88,6 +88,9 @@ function createHeadlightWithFlare(position, target = camera) {
   spotlight.castShadow = true;
   spotlight.target = target;
 
+
+
+
   const lensflare = new Lensflare();
   lensflare.addElement(new LensflareElement(textureFlare0, 300, 0, spotlight.color));
   lensflare.addElement(new LensflareElement(textureFlare3, 60, 0.6));
@@ -106,13 +109,14 @@ function createHeadlightWithFlare(position, target = camera) {
 }
 
 // 🟢 المصباح الأول (يسار)
-const spotlightLeft = createHeadlightWithFlare(new THREE.Vector3(-7, 7, -20));
-
-// 🔵 المصباح الثاني (يمين)
-const spotlightRight = createHeadlightWithFlare(new THREE.Vector3(7, 7, -20));
+window.spotlightLeft = createHeadlightWithFlare(new THREE.Vector3(-7, 7, -20));
+window.spotlightRight = createHeadlightWithFlare(new THREE.Vector3(7, 7, -20));
 
 // 🔧 أدوات التحكّم (ابقها بعد الكاميرا)
 const transformControl = new TransformControls(camera, renderer.domElement);
+
+  spotlightLeft.visible = false;
+spotlightRight.visible = false;
 
 
 
