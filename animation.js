@@ -16,6 +16,10 @@ let rearView = window.rearView; // 👈 ربط بالحالة العالمية
 const frontCamPosition = new THREE.Vector3(-33.41, 13.46, -107.95);
 const rearCamPosition = new THREE.Vector3(41.89, 12.63, 90.92);
 
+const frontTarget = new THREE.Vector3(0, 2, 0);
+const rearTarget = new THREE.Vector3(0, 2, 0); // نفس النقطة إذا بدك بس لفّة للخلف
+
+
 
 
 // 🔧 ربط العناصر من script.js
@@ -164,47 +168,40 @@ window.changeColor = function (hex) {
 
 //camera pos2
 window.switchCameraView = function () {
-const doorBtn = document.getElementById('door-btn');
-if (doorOpen) toggleDoors(); // ✅ إغلاق الأبواب إذا كانت مفتوحة
+  if (doorOpen) toggleDoors();
 
-
-  doorBtn.disabled = true; // ⛔️ تعطيل الزر
+  const doorBtn = document.getElementById('door-btn');
+  doorBtn.disabled = true;
 
   const camFrom = camera.position.clone();
-  const camTo = rearView
-    ? new THREE.Vector3(-33.41, 13.46, -107.95) // ← الرجوع للمكان الأساسي
-    : new THREE.Vector3(41.89, 12.63, 90.92);   // ← الكاميرا الخلفية
+  const camTo = rearView ? frontCamPosition.clone() : rearCamPosition.clone();
+
+  const targetFrom = controls.target.clone();
+  const targetTo = rearView ? frontTarget.clone() : rearTarget.clone();
 
   const startTime = clock.getElapsedTime();
   const duration = 0.5;
 
-  // 🔊 صوت
   if (window.cameraSound) {
-  window.cameraSound.stop(); // 🛑 إيقافه إذا كان شغّال
-  window.cameraSound.play(); // ▶️ إعادة التشغيل
-}
-
-
-
-//xxxxxx
-function animateSwitch() {
-  const t = Math.min((clock.getElapsedTime() - startTime) / duration, 1);
-  camera.position.lerpVectors(camFrom, camTo, t);
-  controls.update();
-
-  if (t < 1) {
-    requestAnimationFrame(animateSwitch);
-  } else {
-    rearView = !rearView;
-    window.rearView = rearView;
-
-    // ✅ فعّل الزر فقط إذا رجعنا للمشهد الأمامي
-    doorBtn.disabled = rearView; // true إذا بالخلف، false إذا رجع للأمام
+    window.cameraSound.stop();
+    window.cameraSound.play();
   }
-}
 
+  function animateSwitch() {
+    const t = Math.min((clock.getElapsedTime() - startTime) / duration, 1);
 
+    camera.position.lerpVectors(camFrom, camTo, t);
+    controls.target.lerpVectors(targetFrom, targetTo, t);
+    controls.update();
 
+    if (t < 1) {
+      requestAnimationFrame(animateSwitch);
+    } else {
+      rearView = !rearView;
+      window.rearView = rearView;
+      doorBtn.disabled = rearView;
+    }
+  }
 
   animateSwitch();
 };
