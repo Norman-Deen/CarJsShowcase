@@ -13,6 +13,9 @@ let camera;
 let rearView = window.rearView; // 👈 ربط بالحالة العالمية
 
 
+const frontCamPosition = new THREE.Vector3(-33.41, 13.46, -107.95);
+const rearCamPosition = new THREE.Vector3(41.89, 12.63, 90.92);
+
 
 
 // 🔧 ربط العناصر من script.js
@@ -162,6 +165,8 @@ window.changeColor = function (hex) {
 //camera pos2
 window.switchCameraView = function () {
 const doorBtn = document.getElementById('door-btn');
+if (doorOpen) toggleDoors(); // ✅ إغلاق الأبواب إذا كانت مفتوحة
+
 
   doorBtn.disabled = true; // ⛔️ تعطيل الزر
 
