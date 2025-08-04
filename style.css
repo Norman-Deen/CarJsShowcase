@@ -125,3 +125,20 @@ button:hover {
 .spinner-border.text-secondary {
   color: #aaa; /* رمادي فاتح واضح */
 }
+
+
+.info-btn {
+  all: unset;
+  cursor: pointer;
+  font-size: 40px;
+  color: #0f3057;
+  margin-left: auto;
+  padding: 10px;
+  border-radius: 50%;
+  transition: background 0.3s;
+  align-self: center;
+}
+
+.info-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}

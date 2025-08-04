@@ -158,7 +158,7 @@ scene.add(sunLight);
 
 
   const loader = new GLTFLoader();
-  loader.load('volvo.glb', (gltf) => {
+  loader.load('Car.glb', (gltf) => {
     scene.add(gltf.scene);
 
 
