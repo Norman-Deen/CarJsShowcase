@@ -55,9 +55,35 @@ export function animateScene() {
 if (camera.position.y < 1) {
   camera.position.y = 1;
 }
-
-  
 }
+
+
+
+//shake Camera
+function shakeCamera(strength = 10, duration = 2000) {
+  const startTime = performance.now();
+  const initialPosition = camera.position.clone();
+
+  function animateShake(now) {
+    const elapsed = now - startTime;
+    const progress = elapsed / duration;
+
+    if (progress < 1) {
+      const factor = strength * (1 - progress);
+      camera.position.x = initialPosition.x + (Math.random() - 0.5) * factor;
+      camera.position.y = initialPosition.y + (Math.random() - 0.5) * factor;
+      camera.position.z = initialPosition.z + (Math.random() - 0.5) * factor;
+
+      requestAnimationFrame(animateShake);
+    } else {
+      camera.position.copy(initialPosition);
+    }
+  }
+
+  requestAnimationFrame(animateShake);
+}
+
+
 
 
 
@@ -107,13 +133,26 @@ const camTarget = doorOpen
 const camDuration = 0.5; // ثانية
 const camMoveStart = clock.getElapsedTime();
 
+
 function animateCamera() {
   const t = Math.min((clock.getElapsedTime() - camMoveStart) / camDuration, 1);
   camera.position.lerpVectors(camStart, camTarget, t);
   camera.updateProjectionMatrix();
 
-  if (t < 1) requestAnimationFrame(animateCamera);
+  if (t < 1) {
+    requestAnimationFrame(animateCamera);
+  } else {
+    // ✅ بعد انتهاء الحركة، شغّل الاهتزاز مع الصوت
+    if (!doorOpen && window.engineSound) {
+      window.engineSound.stop();
+      setTimeout(() => {
+        window.engineSound.play();
+        shakeCamera(0.3, 400); // اهتزاز واضح
+      }, 350);
+    }
+  }
 }
+
 
 
 
@@ -149,9 +188,21 @@ animateCamera();
     } else {
       doorOpen = !doorOpen;
 
+
+
 // ✅ تشغيل أو إطفاء الضوء حسب حالة الأبواب
-if (window.spotlightLeft) window.spotlightLeft.visible = doorOpen;
-if (window.spotlightRight) window.spotlightRight.visible = doorOpen;
+if (doorOpen) {
+  // ✅ تأخير تشغيل المصابيح بعد 500ms من فتح الأبواب
+  setTimeout(() => {
+    if (window.spotlightLeft) window.spotlightLeft.visible = true;
+    if (window.spotlightRight) window.spotlightRight.visible = true;
+  }, 380);
+} else {
+  // ✅ إطفاء المصابيح فورًا عند الإغلاق
+  if (window.spotlightLeft) window.spotlightLeft.visible = false;
+  if (window.spotlightRight) window.spotlightRight.visible = false;
+}
+
 
 
     }
@@ -159,10 +210,13 @@ if (window.spotlightRight) window.spotlightRight.visible = doorOpen;
 
 if (!doorOpen && window.engineSound) {
   window.engineSound.stop();
+
   setTimeout(() => {
     window.engineSound.play();
-  }, 350); // ⏱ تأخير نصف ثانية
+    shakeCamera(2, 1000); // ⬅️ اهتزاز قوي، لمدة 300ms
+  }, 800); // تأخير قبل التشغيل
 }
+
 
 
   animateAll();
