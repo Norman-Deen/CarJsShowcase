@@ -7,6 +7,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 
 import { Lensflare, LensflareElement } from 'three/addons/objects/Lensflare.js';
+import { setupInitialCameraPosition } from './animation.js';
 
 
 const textureLoader = new THREE.TextureLoader();
@@ -37,9 +38,10 @@ init();
 function init() {
   scene = new THREE.Scene();
 
-  camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 5, 200);
-  camera.position.set(-36.19, 14.13, -112.57);
-  camera.rotation.set(-3.05, -0.31, -3.11);
+camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 5, 300);
+setupInitialCameraPosition(camera); // 👈 من animation.js
+
+
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -70,7 +72,7 @@ setupEnvironment(renderer, scene);
   controls = new OrbitControls(camera, renderer.domElement);
   controls.target.set(0, 2, 0);
   controls.minDistance = 40;   // أقرب مسافة من الجسم
-controls.maxDistance = 150;  // أبعد مسافة بالكاميرا
+controls.maxDistance = 200;  // أبعد مسافة بالكاميرا
 
   controls.update();
 

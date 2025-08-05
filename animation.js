@@ -13,11 +13,40 @@ let camera;
 let rearView = window.rearView; // 👈 ربط بالحالة العالمية
 
 
-const frontCamPosition = new THREE.Vector3(-33.41, 13.46, -107.95);
-const rearCamPosition = new THREE.Vector3(41.89, 12.63, 90.92);
 
-const frontTarget = new THREE.Vector3(0, 2, 0);
-const rearTarget = new THREE.Vector3(0, 2, 0); // نفس النقطة إذا بدك بس لفّة للخلف
+
+
+
+
+
+
+// 📍 إعداد الكاميرا حسب نوع الجهاز + حفظ المواضع الديناميكية
+export function setupInitialCameraPosition(camera) {
+  const isMobile = window.matchMedia('(max-width: 768px)').matches || /Mobi|Android/i.test(navigator.userAgent);
+  console.log('📱 isMobile?', isMobile); // ← للمراجعة
+
+  if (isMobile) {
+    // 📱 إعدادات الكاميرا للموبايل
+    camera.position.set(-120, 20, -500);
+    window.rearCamPosition = new THREE.Vector3(45, 12, 120);
+  } else {
+    // 🖥️ إعدادات الكاميرا للديسكتوب
+    camera.position.set(-50, 14.13, -400);
+    window.rearCamPosition = new THREE.Vector3(65, 14, 250);
+  }
+
+  window.frontCamPosition = camera.position.clone();
+  window.frontTarget = new THREE.Vector3(0, 2, 0);
+  window.rearTarget = new THREE.Vector3(0, 2, 0);
+
+  camera.rotation.set(-3.05, -0.31, -3.11);
+  camera.updateProjectionMatrix();
+}
+
+
+
+
+
 
 
 
@@ -242,10 +271,12 @@ window.switchCameraView = function () {
   doorBtn.disabled = true;
 
   const camFrom = camera.position.clone();
-  const camTo = rearView ? frontCamPosition.clone() : rearCamPosition.clone();
+const camTo = rearView ? window.frontCamPosition.clone() : window.rearCamPosition.clone();
+
 
   const targetFrom = controls.target.clone();
-  const targetTo = rearView ? frontTarget.clone() : rearTarget.clone();
+ const targetTo = rearView ? window.frontTarget.clone() : window.rearTarget.clone();
+
 
   const startTime = clock.getElapsedTime();
   const duration = 0.5;
