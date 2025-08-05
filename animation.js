@@ -10,7 +10,7 @@ let paintedParts = [];
 
 
 let camera;
-let rearView = window.rearView; // 👈 ربط بالحالة العالمية
+
 
 
 
@@ -33,6 +33,12 @@ export function setupInitialCameraPosition(camera, controls) {
     // 🎯 Pan للموبايل ← هذا فقط للرؤية الخلفية
     controls.target.set(0, 2, 0); // ممكن تغيره مثل (2, 2, 0)
     window.rearTarget = controls.target.clone(); // ✅ هذا الهدف الخلفي فقط
+
+      // ✅ أضف التالي
+  window.frontCamPosition = camera.position.clone();
+  window.frontTarget = controls.target.clone();
+
+  
   } else {
     // 🖥️ إعدادات الكاميرا للديسكتوب
     camera.position.set(-33.41, 13.46, -107.95);
@@ -283,13 +289,10 @@ window.switchCameraView = function () {
   doorBtn.disabled = true;
 
   const camFrom = camera.position.clone();
-const camTo = rearView ? window.frontCamPosition.clone() : window.rearCamPosition.clone();
-
-
   const targetFrom = controls.target.clone();
-const targetTo = rearView ? window.frontTarget.clone() : window.rearTarget.clone();
 
-
+  const camTo = window.rearView ? window.frontCamPosition.clone() : window.rearCamPosition.clone();
+  const targetTo = window.rearView ? window.frontTarget.clone() : window.rearTarget.clone();
 
   const startTime = clock.getElapsedTime();
   const duration = 0.5;
@@ -309,9 +312,8 @@ const targetTo = rearView ? window.frontTarget.clone() : window.rearTarget.clone
     if (t < 1) {
       requestAnimationFrame(animateSwitch);
     } else {
-      rearView = !rearView;
-      window.rearView = rearView;
-      doorBtn.disabled = rearView;
+      window.rearView = !window.rearView; // ✅ التصحيح هنا
+      doorBtn.disabled = window.rearView;
     }
   }
 

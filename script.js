@@ -63,8 +63,6 @@ function init() {
   controls.maxDistance = 200;
   controls.update();
 
-  // ✅ استدعِ بعدها إعداد الكاميرا
-  setupInitialCameraPosition(camera, controls);
 
 
 
@@ -156,6 +154,13 @@ scene.add(sunLight);
     scene.add(gltf.scene);
 
 
+
+    
+  // ✅ استدعِ بعدها إعداد الكاميرا
+  setupInitialCameraPosition(camera, controls);
+
+
+  
     //new
     gltf.scene.traverse((child) => {
   if (child.isMesh) {
