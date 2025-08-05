@@ -170,9 +170,17 @@ if (window.rearView) {
 
 // 🎥 camera toggle animation
 const camStart = camera.position.clone();
+
+// ✅ نحدد إذا كان الجهاز موبايل
+const isMobile = window.matchMedia('(max-width: 768px)').matches || /Mobi|Android/i.test(navigator.userAgent);
+
+// ✅ نحدد الهدف الجديد حسب الجهاز وحالة الأبواب
 const camTarget = doorOpen
   ? window.frontCamPosition.clone()
-  : new THREE.Vector3(-44.81, 17.28, -143.38); // أو أي موقع مخصص للـ Zoom
+  : isMobile
+    ? new THREE.Vector3(-44.81, 17.28, -350) // ← زووم موبايل (عدّل القيم حسب ذوقك)
+    : new THREE.Vector3( -30 , 17.28, -130); // ← زووم ديسكتوب
+
 
 
 const camDuration = 0.5; // ثانية
