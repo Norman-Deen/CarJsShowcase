@@ -21,27 +21,35 @@ let rearView = window.rearView; // 👈 ربط بالحالة العالمية
 
 
 // 📍 إعداد الكاميرا حسب نوع الجهاز + حفظ المواضع الديناميكية
-export function setupInitialCameraPosition(camera) {
+export function setupInitialCameraPosition(camera, controls) {
   const isMobile = window.matchMedia('(max-width: 768px)').matches || /Mobi|Android/i.test(navigator.userAgent);
   console.log('📱 isMobile?', isMobile); // ← للمراجعة
 
   if (isMobile) {
     // 📱 إعدادات الكاميرا للموبايل
     camera.position.set(-120, 20, -500);
-    window.rearCamPosition = new THREE.Vector3(45, 12, 120);
+    window.rearCamPosition = new THREE.Vector3(45, 12, 200);
+
+    // 🎯 Pan إلى اليمين قليلًا
+    controls.target.set(0, 2, 0); // ← غيّر القيمة حسب الزاوية اللي بدك تشوف فيها السيارة
   } else {
     // 🖥️ إعدادات الكاميرا للديسكتوب
-    camera.position.set(-50, 14.13, -400);
+    camera.position.set(-50, 14.13, -200);
     window.rearCamPosition = new THREE.Vector3(65, 14, 250);
+
+    // 🎯 مركز الهدف للكمبيوتر
+    controls.target.set(0, 2, 0);
   }
 
   window.frontCamPosition = camera.position.clone();
-  window.frontTarget = new THREE.Vector3(0, 2, 0);
-  window.rearTarget = new THREE.Vector3(0, 2, 0);
+  window.frontTarget = controls.target.clone();
+  window.rearTarget = new THREE.Vector3(0, 2, 0); // ممكن تغيّرها لو بدك التوجيه الخلفي يختلف
 
   camera.rotation.set(-3.05, -0.31, -3.11);
   camera.updateProjectionMatrix();
+  controls.update(); // ⬅️ ضروري بعد تعديل target
 }
+
 
 
 

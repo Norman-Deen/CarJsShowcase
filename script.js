@@ -38,10 +38,7 @@ init();
 function init() {
   scene = new THREE.Scene();
 
-camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 5, 300);
-setupInitialCameraPosition(camera); // 👈 من animation.js
-
-
+  camera = new THREE.PerspectiveCamera(20, window.innerWidth / window.innerHeight, 5, 300);
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -49,32 +46,27 @@ setupInitialCameraPosition(camera); // 👈 من animation.js
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.outputEncoding = THREE.sRGBEncoding;
 
-  //new
- renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap; // الأفضل للنعومة
-
-
-
-
-
-
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   document.body.appendChild(renderer.domElement);
 
   composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
 
+  setupEnvironment(renderer, scene);
 
-  
-setupEnvironment(renderer, scene);
-
-
+  // ✅ أنشئ OrbitControls أولًا
   controls = new OrbitControls(camera, renderer.domElement);
   controls.target.set(0, 2, 0);
-  controls.minDistance = 40;   // أقرب مسافة من الجسم
-controls.maxDistance = 200;  // أبعد مسافة بالكاميرا
-
+  controls.minDistance = 40;
+  controls.maxDistance = 200;
   controls.update();
+
+  // ✅ استدعِ بعدها إعداد الكاميرا
+  setupInitialCameraPosition(camera, controls);
+
+
 
 
 
