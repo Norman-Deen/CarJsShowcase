@@ -38,7 +38,7 @@ export function setupInitialCameraPosition(camera, controls) {
   window.frontCamPosition = camera.position.clone();
   window.frontTarget = controls.target.clone();
 
-  
+
   } else {
     // 🖥️ إعدادات الكاميرا للديسكتوب
     camera.position.set(-33.41, 13.46, -107.95);
@@ -169,13 +169,11 @@ if (window.rearView) {
 
 
 // 🎥 camera toggle animation
-const camStart = doorOpen
-  ? new THREE.Vector3(-44.81, 17.28, -143.38) // ← الوضع الحالي
-  : new THREE.Vector3(-33.41, 13.46, -107.95); // ← الوضع الأصلي
-
+const camStart = camera.position.clone();
 const camTarget = doorOpen
-  ? new THREE.Vector3(-33.41, 13.46, -107.95)
-  : new THREE.Vector3(-44.81, 17.28, -143.38);
+  ? window.frontCamPosition.clone()
+  : new THREE.Vector3(-44.81, 17.28, -143.38); // أو أي موقع مخصص للـ Zoom
+
 
 const camDuration = 0.5; // ثانية
 const camMoveStart = clock.getElapsedTime();
