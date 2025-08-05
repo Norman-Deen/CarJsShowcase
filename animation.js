@@ -30,25 +30,29 @@ export function setupInitialCameraPosition(camera, controls) {
     camera.position.set(-120, 20, -500);
     window.rearCamPosition = new THREE.Vector3(45, 12, 200);
 
-    // 🎯 Pan إلى اليمين قليلًا
-    controls.target.set(0, 2, 0); // ← غيّر القيمة حسب الزاوية اللي بدك تشوف فيها السيارة
+    // 🎯 Pan للموبايل ← هذا فقط للرؤية الخلفية
+    controls.target.set(0, 2, 0); // ممكن تغيره مثل (2, 2, 0)
+    window.rearTarget = controls.target.clone(); // ✅ هذا الهدف الخلفي فقط
   } else {
     // 🖥️ إعدادات الكاميرا للديسكتوب
-    camera.position.set(-50, 14.13, -200);
-    window.rearCamPosition = new THREE.Vector3(65, 14, 250);
+    camera.position.set(-33.41, 13.46, -107.95);
+    window.rearCamPosition = new THREE.Vector3(29.490, 10.450, 98.363);
 
-    // 🎯 مركز الهدف للكمبيوتر
-    controls.target.set(0, 2, 0);
+    // 🎯 Pan للرؤية الأمامية فقط
+    controls.target.set(0, 6, 0);
+    window.frontTarget = controls.target.clone(); // ✅ هذا الهدف الأمامي فقط
+
+    // ثم حدد الهدف الخلفي حسب رؤيتك الخاصة
+    window.rearTarget = new THREE.Vector3(-2 , 6, 0); // ← Pan بسيط لليمين للخلف
   }
 
   window.frontCamPosition = camera.position.clone();
-  window.frontTarget = controls.target.clone();
-  window.rearTarget = new THREE.Vector3(0, 2, 0); // ممكن تغيّرها لو بدك التوجيه الخلفي يختلف
 
   camera.rotation.set(-3.05, -0.31, -3.11);
   camera.updateProjectionMatrix();
-  controls.update(); // ⬅️ ضروري بعد تعديل target
+  controls.update();
 }
+
 
 
 
@@ -283,7 +287,8 @@ const camTo = rearView ? window.frontCamPosition.clone() : window.rearCamPositio
 
 
   const targetFrom = controls.target.clone();
- const targetTo = rearView ? window.frontTarget.clone() : window.rearTarget.clone();
+const targetTo = rearView ? window.frontTarget.clone() : window.rearTarget.clone();
+
 
 
   const startTime = clock.getElapsedTime();
