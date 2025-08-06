@@ -1,6 +1,16 @@
-body { margin: 0; overflow: hidden; }
-canvas { display: block; }
+/* === أساسيات عامة === */
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  background-color: #f3f3f3;
+}
 
+canvas {
+  display: block;
+}
+
+/* === واجهة المستخدم === */
 .ui {
   position: absolute;
   top: 10px;
@@ -9,13 +19,14 @@ canvas { display: block; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 10;
-  padding: 10px;
   gap: 10px;
+  padding: 10px;
+  z-index: 10;
   background: transparent;
   flex-wrap: wrap;
 }
 
+/* === الأزرار === */
 button {
   margin: 6px;
   padding: 14px 24px;
@@ -44,12 +55,13 @@ button:hover {
   filter: grayscale(70%);
 }
 
+/* === اختيار الألوان === */
 .color-picker {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: 10px;
   gap: 6px;
+  margin-top: 10px;
 }
 
 .color {
@@ -61,31 +73,51 @@ button:hover {
   cursor: pointer;
   transition: transform 0.2s ease;
 }
+
 .color:hover {
   transform: scale(1.1);
   border-color: #888;
 }
 
-#bloom-toggle {
-  padding: 6px 14px;
-  font-size: 14px;
-  border: none;
-  border-radius: 5px;
-  background: #333;
-  color: white;
+/* === زر المعلومات (أيقونة فقط) === */
+.info-btn {
+  all: unset;
   cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
-  margin-top: 10px;
+  font-size: 40px;
+  color: #0f3057;
+  margin-left: 40px;
 }
 
-#bloom-toggle:hover {
-  background: #555;
-  transform: scale(1.05);
+.info-btn:hover {
+  background: none;
 }
 
+/* === نافذة About === */
+#about-panel {
+  display: none;
+  position: fixed;
+  top: 10%;
+  left: 5%;
+  width: 90%;
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  z-index: 9999;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #222;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
 
+#about-panel h3 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #111;
+}
 
-
+/* === شاشة التحميل === */
 #loader {
   position: fixed;
   top: 0;
@@ -100,52 +132,12 @@ button:hover {
 }
 
 .spinner-border.text-secondary {
-  color: #aaa; /* رمادي فاتح واضح */
+  color: #aaa;
 }
 
-
-.info-btn {
-  all: unset;
-  cursor: pointer;
-  font-size: 40px;
-  color: #0f3057;
-  margin-left: auto;
-  padding: 10px;
-  border-radius: 50%;
-  transition: background 0.3s;
-  align-self: center;
-}
-.info-btn:hover {
-  background: none;
-}
-
-
-
-#about-panel {
-  
-   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  font-size: 18px;
-  line-height: 1.6;
-  color: #222;
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  z-index: 9999;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-}
-#about-panel h3 {
-  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: #111;
-}
-
-
-
-
+/* === تحسينات الموبايل === */
 @media (max-width: 900px) {
-  /* خلي الحاوية الرئيسية تشغل العرض كله */
+  /* الحاوية الرئيسية */
   .ui {
     left: 0;
     transform: none;
@@ -154,7 +146,7 @@ button:hover {
     box-sizing: border-box;
   }
 
-  /* حاوية الأزرار */
+  /* صف الأزرار */
   .ui-row {
     display: flex;
     gap: 8px;
@@ -162,7 +154,6 @@ button:hover {
     padding: 0;
   }
 
-  /* الأزرار متساوية وعريضة */
   .ui-row button {
     flex: 1 1 auto !important;
     min-width: 0 !important;
@@ -173,19 +164,36 @@ button:hover {
     width: auto !important;
   }
 
-  .color {
-  width: 45px;
-  height: 45px;
-}
+  /* صف مربعات الألوان والأيقونة */
+  .color-picker {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .color-picker .color {
+    width: 37px;
+    height: 37px;
+  }
+
+  .color-picker .info-btn {
+    margin: 0;
+    padding: 0;
+    font-size: 32px;
+    flex: 0 0 auto;
+  }
+
+  /* نص About أصغر */
   #about-panel {
-    font-size: 12px;       /* حجم الفقرة ككل */
+    font-size: 14px;
   }
   #about-panel h3 {
-    font-size: 20px;       /* حجم العنوان */
+    font-size: 20px;
   }
   #about-panel p {
-    font-size: 12px;       /* للتأكد من كل `<p>` */
+    font-size: 14px;
   }
-
-
 }
