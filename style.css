@@ -131,9 +131,23 @@ button:hover {
   z-index: 9999;
 }
 
-.spinner-border.text-secondary {
-  color: #aaa;
+/* الأيقونة الدوّارة */
+.spinner-icon {
+  display: inline-block;      /* يسمح بالدوران */
+  font-size: 3rem;
+  color: #0f3057;
+  animation: spin 1s linear infinite;
 }
+
+/* حركة الدوران */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+
+
+
 
 /* === تحسينات الموبايل === */
 @media (max-width: 900px) {
