@@ -177,6 +177,15 @@ button:hover {
   width: 45px;
   height: 45px;
 }
+  #about-panel {
+    font-size: 12px;       /* حجم الفقرة ككل */
+  }
+  #about-panel h3 {
+    font-size: 20px;       /* حجم العنوان */
+  }
+  #about-panel p {
+    font-size: 12px;       /* للتأكد من كل `<p>` */
+  }
 
 
 }
