@@ -183,6 +183,8 @@ const camTarget = doorOpen
 
 
 
+
+
 const camDuration = 0.5; // ثانية
 const camMoveStart = clock.getElapsedTime();
 

@@ -83,29 +83,6 @@ button:hover {
   transform: scale(1.05);
 }
 
-@media (max-width: 600px) {
-  .ui {
-    flex-direction: column;
-  }
-  button {
-    font-size: 16px;
-    padding: 12px 20px;
-    width: 90vw;
-    max-width: 100%;
-  }
-  .color {
-    width: 30px;
-    height: 30px;
-  }
-}
-
-@media (min-width: 601px) {
-  .ui {
-    flex-direction: row;
-    justify-content: center;
-    gap: 12px;
-  }
-}
 
 
 
@@ -138,7 +115,56 @@ button:hover {
   transition: background 0.3s;
   align-self: center;
 }
-
 .info-btn:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: none;
+}
+
+
+
+#about-panel {
+  
+   font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #222;
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  z-index: 9999;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+#about-panel h3 {
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #111;
+}
+
+
+
+
+
+@media (max-width: 600px) {
+  .ui {
+    flex-direction: column;
+  }
+  button {
+    font-size: 16px;
+    padding: 12px 20px;
+    width: 90vw;
+    max-width: 100%;
+  }
+  .color {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (min-width: 601px) {
+  .ui {
+    flex-direction: row;
+    justify-content: center;
+    gap: 12px;
+  }
 }
