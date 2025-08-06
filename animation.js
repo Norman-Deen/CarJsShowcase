@@ -95,7 +95,8 @@ export function initAnimationParts({
 // 🎬 التحريك المستمر
 export function animateScene() {
   requestAnimationFrame(animateScene);
-  controls.update();
+if (controls) controls.update();
+
   composer.render();
 
 // 📏 منع الكاميرا من النزول تحت الأرض
