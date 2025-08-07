@@ -7,57 +7,41 @@ let composer, controls;
 let FrontleftDoor, FrontrightDoor, backLeftDoor, backRightDoor;
 let spoiler, wheelFL, wheelFR, upperWindow, handle;
 let paintedParts = [];
-
-
 let camera;
-let rearView = window.rearView; // 👈 ربط بالحالة العالمية
 
 
-
-
-
-
-
-
-
-// 📍 إعداد الكاميرا حسب نوع الجهاز + حفظ المواضع الديناميكية
-export function setupInitialCameraPosition(camera) {
+//Setup camera position and target based on device type
+export function setupInitialCameraPosition(cameraInstance, ctrl) {
   const isMobile = window.matchMedia('(max-width: 768px)').matches || /Mobi|Android/i.test(navigator.userAgent);
-  console.log('📱 isMobile?', isMobile); // ← للمراجعة
+  camera = cameraInstance;
+  controls = ctrl;
 
   if (isMobile) {
-    // 📱 إعدادات الكاميرا للموبايل
     camera.position.set(-120, 20, -500);
-    window.rearCamPosition = new THREE.Vector3(45, 12, 120);
+    window.rearCamPosition = new THREE.Vector3(45, 12, 200);
+    controls.target.set(0, 2, 0);
+    window.rearTarget = controls.target.clone();
   } else {
-    // 🖥️ إعدادات الكاميرا للديسكتوب
-    camera.position.set(-50, 14.13, -400);
-    window.rearCamPosition = new THREE.Vector3(65, 14, 250);
+    camera.position.set(-33.41, 13.46, -107.95);
+    window.rearCamPosition = new THREE.Vector3(29.49, 10.45, 98.363);
+    controls.target.set(0, 6, 0);
+    window.rearTarget = new THREE.Vector3(-2, 6, 0);
   }
 
   window.frontCamPosition = camera.position.clone();
-  window.frontTarget = new THREE.Vector3(0, 2, 0);
-  window.rearTarget = new THREE.Vector3(0, 2, 0);
+  window.frontTarget = controls.target.clone();
 
   camera.rotation.set(-3.05, -0.31, -3.11);
   camera.updateProjectionMatrix();
+  controls.update();
 }
 
 
-
-
-
-
-
-
-
-// 🔧 ربط العناصر من script.js
-export function initAnimationParts({
-  comp, ctrl, parts, paintTargets,cam
-}) {
+ //Receives parts, camera, and control references from main script
+export function initAnimationParts({ comp, ctrl, parts, paintTargets, cam }) {
   composer = comp;
   controls = ctrl;
-   camera = cam; // ✅ استلام الكاميرا هنا
+  camera = cam;
 
   ({
     FrontleftDoor,
@@ -74,21 +58,31 @@ export function initAnimationParts({
   paintedParts = paintTargets;
 }
 
-// 🎬 التحريك المستمر
+/**
+ * Continuous render loop + door logic
+ */
 export function animateScene() {
   requestAnimationFrame(animateScene);
-  controls.update();
-  composer.render();
 
-// 📏 منع الكاميرا من النزول تحت الأرض
-if (camera.position.y < 1) {
-  camera.position.y = 1;
+  if (controls) controls.update();
+
+  // Automatically close doors when camera rotates to rear
+  if (doorOpen && camera.position.z > 0 && !window.__forceClose) {
+    window.__forceClose = true;
+    toggleDoors();
+  }
+
+  if (composer) composer.render();
+
+  // Prevent camera from going underground
+  if (camera.position.y < 1) {
+    camera.position.y = 1;
+  }
 }
-}
 
-
-
-//shake Camera
+/**
+ * Screen shake effect
+ */
 function shakeCamera(strength = 10, duration = 2000) {
   const startTime = performance.now();
   const initialPosition = camera.position.clone();
@@ -112,12 +106,15 @@ function shakeCamera(strength = 10, duration = 2000) {
   requestAnimationFrame(animateShake);
 }
 
-
-
-
-
-// 🚪 فتح/إغلاق الأبواب
+/**
+ * Toggle door animation and camera transition
+ */
 window.toggleDoors = function () {
+  if (window.rearView) {
+    console.warn("Cannot open doors in rear view mode.");
+    return;
+  }
+
   const duration = 0.5;
   const start = clock.getElapsedTime();
 
@@ -136,70 +133,71 @@ window.toggleDoors = function () {
   const spoilerTarget = doorOpen ? 0 : degToRad(-120);
   const windowTarget = doorOpen ? 0 : degToRad(-10);
   const wheelTarget = doorOpen ? 0 : degToRad(-40);
-  const handleTargetQuat = new THREE.Quaternion().setFromAxisAngle(
-    new THREE.Vector3(0, 0, 1),
-    doorOpen ? 0 : degToRad(-100)
-  );
+  const handleTargetQuat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), doorOpen ? 0 : degToRad(-100));
 
+  // Animate camera target position smoothly
+  const targetFrom = controls.target.clone();
+  const targetTo = window.frontTarget.clone();
+  const targetStart = clock.getElapsedTime();
+  const targetDuration = 0.5;
 
+  function animateTarget() {
+    const t = Math.min((clock.getElapsedTime() - targetStart) / targetDuration, 1);
+    controls.target.lerpVectors(targetFrom, targetTo, t);
+    controls.update();
+    if (t < 1) requestAnimationFrame(animateTarget);
+  }
+  animateTarget();
 
-if (window.rearView) {
-  console.warn("Cannot open doors in rear view mode.");
-  return; // ⛔️ إلغاء الوظيفة
-}
+  // Skip full animation if force-closing
+  if (doorOpen && window.__forceClose) {
+    window.__forceClose = false;
+    animateAll();
+    return;
+  }
 
+  // Camera zoom animation
+  const camStart = camera.position.clone();
+  const isMobile = window.matchMedia('(max-width: 768px)').matches || /Mobi|Android/i.test(navigator.userAgent);
+  const camTarget = doorOpen
+    ? window.frontCamPosition.clone()
+    : isMobile
+      ? new THREE.Vector3(-44.81, 17.28, -350)
+      : new THREE.Vector3(-30, 17.28, -130);
 
+  const camDuration = 0.5;
+  const camMoveStart = clock.getElapsedTime();
 
-// 🎥 camera toggle animation
-const camStart = doorOpen
-  ? new THREE.Vector3(-44.81, 17.28, -143.38) // ← الوضع الحالي
-  : new THREE.Vector3(-33.41, 13.46, -107.95); // ← الوضع الأصلي
+  function animateCamera() {
+    const t = Math.min((clock.getElapsedTime() - camMoveStart) / camDuration, 1);
+    camera.position.lerpVectors(camStart, camTarget, t);
+    camera.updateProjectionMatrix();
 
-const camTarget = doorOpen
-  ? new THREE.Vector3(-33.41, 13.46, -107.95)
-  : new THREE.Vector3(-44.81, 17.28, -143.38);
-
-const camDuration = 0.5; // ثانية
-const camMoveStart = clock.getElapsedTime();
-
-
-function animateCamera() {
-  const t = Math.min((clock.getElapsedTime() - camMoveStart) / camDuration, 1);
-  camera.position.lerpVectors(camStart, camTarget, t);
-  camera.updateProjectionMatrix();
-
-  if (t < 1) {
-    requestAnimationFrame(animateCamera);
-  } else {
-    // ✅ بعد انتهاء الحركة، شغّل الاهتزاز مع الصوت
-    if (!doorOpen && window.engineSound) {
-      window.engineSound.stop();
-      setTimeout(() => {
-        window.engineSound.play();
-        shakeCamera(0.3, 400); // اهتزاز واضح
-      }, 350);
+    if (t < 1) {
+      requestAnimationFrame(animateCamera);
+    } else {
+      if (!doorOpen && window.engineSound) {
+        window.engineSound.stop();
+        setTimeout(() => {
+          window.engineSound.play();
+          shakeCamera(0.3, 400);
+        }, 350);
+      }
     }
   }
-}
-
-
-
 
 if (window.cameraSound) {
-  window.cameraSound.stop();  // ⛔ أوقفه إذا كان مشغول
-  window.cameraSound.play();  // ▶️ شغّله من البداية
+  if (window.cameraSound.isPlaying) {
+    window.cameraSound.stop();
+  }
+  window.cameraSound.play();
 }
 
 
+  if (!window.__forceClose) {
+    animateCamera();
+  }
 
-
-animateCamera();
-
-
-
-
-
-//doors
   function animateAll() {
     const t = Math.min((clock.getElapsedTime() - start) / duration, 1);
     FrontleftDoor.rotation.y = THREE.MathUtils.lerp(fromFL, doorTarget, t);
@@ -217,41 +215,46 @@ animateCamera();
     } else {
       doorOpen = !doorOpen;
 
-
-
-// ✅ تشغيل أو إطفاء الضوء حسب حالة الأبواب
-if (doorOpen) {
-  // ✅ تأخير تشغيل المصابيح بعد 500ms من فتح الأبواب
-  setTimeout(() => {
-    if (window.spotlightLeft) window.spotlightLeft.visible = true;
-    if (window.spotlightRight) window.spotlightRight.visible = true;
-  }, 380);
-} else {
-  // ✅ إطفاء المصابيح فورًا عند الإغلاق
-  if (window.spotlightLeft) window.spotlightLeft.visible = false;
-  if (window.spotlightRight) window.spotlightRight.visible = false;
-}
-
-
-
+      // Toggle headlights
+      if (window.spotlightLeft) window.spotlightLeft.visible = doorOpen;
+      if (window.spotlightRight) window.spotlightRight.visible = doorOpen;
     }
   }
 
-if (!doorOpen && window.engineSound) {
-  window.engineSound.stop();
-
-  setTimeout(() => {
-    window.engineSound.play();
-    shakeCamera(2, 1000); // ⬅️ اهتزاز قوي، لمدة 300ms
-  }, 800); // تأخير قبل التشغيل
-}
-
-
+  if (!doorOpen && window.engineSound) {
+    window.engineSound.stop();
+    setTimeout(() => {
+      window.engineSound.play();
+      shakeCamera(2, 1000);
+    }, 800);
+  }
 
   animateAll();
 };
 
-// 🎨 تغيير اللون
+/**
+ * Instantly close all doors (reset state)
+ */
+function closeDoorsNow() {
+  FrontleftDoor.rotation.y = 0;
+  FrontrightDoor.rotation.y = 0;
+  backLeftDoor.rotation.y = 0;
+  backRightDoor.rotation.y = 0;
+  spoiler.rotation.x = 0;
+  upperWindow.rotation.x = 0;
+  wheelFL.rotation.y = 0;
+  wheelFR.rotation.y = 0;
+  handle.quaternion.identity();
+
+  if (window.spotlightLeft) window.spotlightLeft.visible = false;
+  if (window.spotlightRight) window.spotlightRight.visible = false;
+
+  doorOpen = false;
+}
+
+/**
+ * Change car color
+ */
 window.changeColor = function (hex) {
   paintedParts.forEach(part => {
     if (part && part.material) {
@@ -260,10 +263,9 @@ window.changeColor = function (hex) {
   });
 };
 
-
-
-
-//camera pos2
+/**
+ * Switch between front and rear camera views
+ */
 window.switchCameraView = function () {
   if (doorOpen) toggleDoors();
 
@@ -271,12 +273,10 @@ window.switchCameraView = function () {
   doorBtn.disabled = true;
 
   const camFrom = camera.position.clone();
-const camTo = rearView ? window.frontCamPosition.clone() : window.rearCamPosition.clone();
-
-
   const targetFrom = controls.target.clone();
- const targetTo = rearView ? window.frontTarget.clone() : window.rearTarget.clone();
 
+  const camTo = window.rearView ? window.frontCamPosition.clone() : window.rearCamPosition.clone();
+  const targetTo = window.rearView ? window.frontTarget.clone() : window.rearTarget.clone();
 
   const startTime = clock.getElapsedTime();
   const duration = 0.5;
@@ -288,7 +288,6 @@ const camTo = rearView ? window.frontCamPosition.clone() : window.rearCamPositio
 
   function animateSwitch() {
     const t = Math.min((clock.getElapsedTime() - startTime) / duration, 1);
-
     camera.position.lerpVectors(camFrom, camTo, t);
     controls.target.lerpVectors(targetFrom, targetTo, t);
     controls.update();
@@ -296,9 +295,8 @@ const camTo = rearView ? window.frontCamPosition.clone() : window.rearCamPositio
     if (t < 1) {
       requestAnimationFrame(animateSwitch);
     } else {
-      rearView = !rearView;
-      window.rearView = rearView;
-      doorBtn.disabled = rearView;
+      window.rearView = !window.rearView;
+      doorBtn.disabled = window.rearView;
     }
   }
 
