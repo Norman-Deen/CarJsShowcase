@@ -198,6 +198,8 @@ function init() {
 
     const loaderDiv = document.getElementById('loader');
     if (loaderDiv) loaderDiv.style.display = 'none';
+
+      animateScene();
   });
 
   const ground = new THREE.Mesh(
@@ -212,5 +214,5 @@ function init() {
   window.camera = camera;
   window.rearView = false;
 
-  animateScene();
+
 }
