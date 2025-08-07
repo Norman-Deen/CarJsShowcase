@@ -194,6 +194,27 @@ if (window.rearView) {
   return;
 }
 
+
+
+//For Smoth translation
+const targetFrom = controls.target.clone();
+const targetTo = window.frontTarget.clone();
+const targetStart = clock.getElapsedTime();
+const targetDuration = 0.5; // نصف ثانية
+
+function animateTarget() {
+  const t = Math.min((clock.getElapsedTime() - targetStart) / targetDuration, 1);
+  controls.target.lerpVectors(targetFrom, targetTo, t);
+  controls.update();
+
+  if (t < 1) {
+    requestAnimationFrame(animateTarget);
+  }
+}
+animateTarget();
+
+
+
 // ✅ إذا كنا فقط نغلق الأبواب يدويًا (بدون أنيميشن أو اهتزاز)
 if (doorOpen && window.__forceClose) {
   window.__forceClose = false; // نظف الفلاج
