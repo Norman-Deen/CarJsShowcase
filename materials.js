@@ -1,10 +1,10 @@
-
-//materials.js
+// materials.js
 import * as THREE from 'three';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
-
-// 🪞 كروم
+// --------------------
+// Chrome Material
+// --------------------
 const chromeMaterial = new THREE.MeshPhysicalMaterial({
   color: 0xffffff,
   metalness: 1.0,
@@ -12,18 +12,19 @@ const chromeMaterial = new THREE.MeshPhysicalMaterial({
   reflectivity: 1.0,
   clearcoat: 1.0,
   clearcoatRoughness: 0.0,
-  envMapIntensity: 1.5,
+  envMapIntensity: 1.5
 });
 
-// ✳️ نحتاج لاحقًا لتحديث الـ envMap بعد تحميل HDR
+// Will be called after environment HDR is loaded
 export function setEnvMapToChrome(envMap) {
   chromeMaterial.envMap = envMap;
 }
 
 export { chromeMaterial };
 
-
-// 🎨 الطلاء المتغير
+// --------------------
+// Custom Paint Material
+// --------------------
 export const paintedParts = [];
 
 export const paintMaterial = new THREE.MeshPhysicalMaterial({
@@ -36,17 +37,23 @@ export const paintMaterial = new THREE.MeshPhysicalMaterial({
   envMapIntensity: 2.0
 });
 
+// Apply paint material and register the part
 export function applyPaintMaterial(partsArray) {
   partsArray.forEach(part => {
     if (part) {
       part.material = paintMaterial;
-      paintedParts.push(part);
+
+      // Prevent duplicates in paintedParts
+      if (!paintedParts.includes(part)) {
+        paintedParts.push(part);
+      }
     }
   });
 }
 
-
-// 💡 إضاءة المصابيح
+// --------------------
+// Headlight Material
+// --------------------
 export const headlightMaterial = new THREE.MeshStandardMaterial({
   color: 0xffffff,
   emissive: 0xffffff,
@@ -55,8 +62,9 @@ export const headlightMaterial = new THREE.MeshStandardMaterial({
   roughness: 0.1
 });
 
-
-// 🌅 تحميل HDRI وتطبيقه على المشهد والمواد
+// --------------------
+// Environment HDR Setup
+// --------------------
 export function setupEnvironment(renderer, scene) {
   const pmrem = new THREE.PMREMGenerator(renderer);
 
@@ -71,7 +79,13 @@ export function setupEnvironment(renderer, scene) {
       setEnvMapToChrome(envMap);
 
       paintedParts.forEach(part => {
-        if (part?.material) part.material.envMap = envMap;
+        if (part?.material) {
+          // Dispose old envMap if exists
+          if (part.material.envMap) {
+            part.material.envMap.dispose();
+          }
+          part.material.envMap = envMap;
+        }
       });
 
       texture.dispose();
@@ -79,21 +93,21 @@ export function setupEnvironment(renderer, scene) {
     });
 }
 
-
-
-// 🧱 خامة الأرضية
-
+// --------------------
+// Floor Material
+// --------------------
 const textureLoader = new THREE.TextureLoader();
 
 const floorTexture = textureLoader.load('img/ug4kedun_8K_Albedo.jpg');
 const floorNormal = textureLoader.load('img/ug4kedun_8K_Normal.jpg');
 
+// Repeat pattern on large plane
 [floorTexture, floorNormal].forEach(tex => {
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(50, 50);
 });
 
-// ✨ تحكم بالسطوع هنا (1 = طبيعي، 0.7 = أغمق، 1.2 = أفتح)
+// Brightness multiplier (1 = normal)
 const brightness = 0.9;
 
 export const floorMaterial = new THREE.MeshStandardMaterial({

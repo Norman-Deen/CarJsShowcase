@@ -1,14 +1,12 @@
+// Core Three.js imports
 import * as THREE from 'three';
-import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { Lensflare, LensflareElement } from 'three/addons/objects/Lensflare.js';
 import { setupInitialCameraPosition } from './animation.js';
 import { GLTFLoader } from './three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from './three/examples/jsm/loaders/DRACOLoader.js';
-
 
 import {
   chromeMaterial,
@@ -59,6 +57,7 @@ function init() {
   controls.maxDistance = 200;
   controls.update();
 
+  // Utility to create spotlights with lensflare effect
   function createHeadlightWithFlare(position, target = camera) {
     const spotlight = new THREE.SpotLight(0xffffff, 9000);
     spotlight.position.copy(position);
@@ -83,13 +82,14 @@ function init() {
     return spotlight;
   }
 
+  // Headlights
   window.spotlightLeft = createHeadlightWithFlare(new THREE.Vector3(-7, 7, -20));
   window.spotlightRight = createHeadlightWithFlare(new THREE.Vector3(7, 7, -20));
 
-  const transformControl = new TransformControls(camera, renderer.domElement);
-  spotlightLeft.visible = false;
-  spotlightRight.visible = false;
+  window.spotlightLeft.visible = false;
+  window.spotlightRight.visible = false;
 
+  // Sunlight (directional)
   const sunLight = new THREE.DirectionalLight(0xffffff, 1);
   sunLight.position.set(10, 25, 15);
   sunLight.castShadow = true;
@@ -104,6 +104,7 @@ function init() {
   sunLight.shadow.radius = 5;
   scene.add(sunLight);
 
+  // Load the car model
   const loader = new GLTFLoader();
   const dracoLoader = new DRACOLoader();
   dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
@@ -111,11 +112,11 @@ function init() {
 
   loader.load('Car-draco.glb', (gltf) => {
     const car = gltf.scene;
-    car.scale.set(1, 1, 1);
     scene.add(car);
 
     setupInitialCameraPosition(camera, controls);
 
+    // Enable shadows and mark materials for update
     gltf.scene.traverse((child) => {
       if (child.isMesh) {
         child.castShadow = true;
@@ -124,6 +125,7 @@ function init() {
       }
     });
 
+    // Reference to specific car parts
     const parts = {
       FrontleftDoor: gltf.scene.getObjectByName("M_Left_Front_Door"),
       FrontrightDoor: gltf.scene.getObjectByName("M_Right_Front_Door"),
@@ -146,6 +148,7 @@ function init() {
     const carpaintHood = gltf.scene.getObjectByName("carpaint_hood");
     const carpaintTailgate = gltf.scene.getObjectByName("carpaint_tailgate");
 
+    // Apply paint material to all relevant parts
     applyPaintMaterial([
       carBody,
       parts.FrontleftDoor,
@@ -163,12 +166,15 @@ function init() {
       parts.handleRear
     ]);
 
+    // Apply chrome material to mirror
     const mirror = gltf.scene.getObjectByName("Chroom");
     if (mirror) mirror.material = chromeMaterial;
 
+    // Apply emissive material to headlights
     const headlight = gltf.scene.getObjectByName("reflect_headlights");
     if (headlight) headlight.material = headlightMaterial;
 
+    // Pass parts and references to animation module
     initAnimationParts({
       comp: composer,
       ctrl: controls,
@@ -177,6 +183,7 @@ function init() {
       cam: camera
     });
 
+    // Load and attach audio to camera
     const listener = new THREE.AudioListener();
     camera.add(listener);
 
@@ -198,12 +205,14 @@ function init() {
       window.engineSound = engineSound;
     });
 
+    // Hide loader spinner after model loads
     const loaderDiv = document.getElementById('loader');
     if (loaderDiv) loaderDiv.style.display = 'none';
 
-      animateScene();
+    animateScene(); // Start animation loop
   });
 
+  // Create and add ground plane
   const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(1000, 1000),
     floorMaterial
@@ -213,8 +222,7 @@ function init() {
   ground.receiveShadow = true;
   scene.add(ground);
 
+  // Store camera and view state globally
   window.camera = camera;
   window.rearView = false;
-
-
 }
