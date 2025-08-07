@@ -137,6 +137,7 @@ function init() {
       mirrorL: gltf.scene.getObjectByName("polymsh_detached11"),
       mirrorR: gltf.scene.getObjectByName("carpaint_mirrors"),
       mirrorBack: gltf.scene.getObjectByName("polymsh_detached21"),
+      handleFL: gltf.scene.getObjectByName("polymsh_detached12"),
       handleFront: gltf.scene.getObjectByName("carpaint_door_handles_f"),
       handleRear: gltf.scene.getObjectByName("carpaint_door_handles_r")
     };
@@ -158,6 +159,7 @@ function init() {
       parts.mirrorR,
       parts.mirrorBack,
       parts.handleFront,
+      parts.handleFL,
       parts.handleRear
     ]);
 
