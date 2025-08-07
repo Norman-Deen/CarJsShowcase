@@ -97,6 +97,33 @@ export function animateScene() {
   requestAnimationFrame(animateScene);
 if (controls) controls.update();
 
+
+
+
+
+
+// ✅ أغلق الأبواب إذا الكاميرا وصلت للخلف (180° تقريبًا)
+if (doorOpen && controls) {
+  const camDir = new THREE.Vector3();
+  camera.getWorldDirection(camDir);
+  const rearVector = new THREE.Vector3(0, 0, 1); // ← إذا الخلف Z موجب
+  const angle = camDir.angleTo(rearVector);
+
+ // 🚗 إذا الكاميرا خلف السيارة بمقدار كافي → أغلق الأبواب مباشرة
+if (doorOpen && camera.position.z > 0) { // أو z < 0 حسب اتجاه السيارة
+  if (!window.__forceClose) {
+    window.__forceClose = true;
+    toggleDoors();
+  }
+}
+
+}
+
+
+
+
+
+
   composer.render();
 
 // 📏 منع الكاميرا من النزول تحت الأرض
@@ -164,8 +191,17 @@ window.toggleDoors = function () {
 
 if (window.rearView) {
   console.warn("Cannot open doors in rear view mode.");
-  return; // ⛔️ إلغاء الوظيفة
+  return;
 }
+
+// ✅ إذا كنا فقط نغلق الأبواب يدويًا (بدون أنيميشن أو اهتزاز)
+if (doorOpen && window.__forceClose) {
+  window.__forceClose = false; // نظف الفلاج
+  animateAll(); // ⬅️ شغّل الأنيميشن فقط
+  return;
+}
+
+
 
 
 
@@ -220,7 +256,10 @@ if (window.cameraSound) {
 
 
 
-animateCamera();
+if (!window.__forceClose) {
+  animateCamera(); // فقط إذا ما طلبنا إغلاق فوري
+}
+
 
 
 
@@ -277,6 +316,34 @@ if (!doorOpen && window.engineSound) {
 
   animateAll();
 };
+
+
+
+
+
+function closeDoorsNow() {
+  // 🚪 أعد الوضعيات مباشرة
+  FrontleftDoor.rotation.y = 0;
+  FrontrightDoor.rotation.y = 0;
+  backLeftDoor.rotation.y = 0;
+  backRightDoor.rotation.y = 0;
+  spoiler.rotation.x = 0;
+  upperWindow.rotation.x = 0;
+  wheelFL.rotation.y = 0;
+  wheelFR.rotation.y = 0;
+  handle.quaternion.identity();
+
+  // 🔦 إطفاء المصابيح
+  if (window.spotlightLeft) window.spotlightLeft.visible = false;
+  if (window.spotlightRight) window.spotlightRight.visible = false;
+
+  doorOpen = false;
+}
+
+
+
+
+
 
 // 🎨 تغيير اللون
 window.changeColor = function (hex) {
