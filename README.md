@@ -64,6 +64,6 @@ I'm a Full-Stack and Frontend developer with a background in 3D and visual desig
 
 ## 📎 Links
 
-- [🔗 Live Demo]([your_demo_link_here](https://norman-deen.github.io/CarJsShowcase/))
+- [🔗 Live Demo](https://norman-deen.github.io/CarJsShowcase/)
 - [👤 My LinkedIn](https://www.linkedin.com/in/nour-tinawi)
 - [🔗 My WebSite](https://pure-art.co/)
